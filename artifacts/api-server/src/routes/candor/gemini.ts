@@ -16,7 +16,7 @@ export class GeminiNotConfiguredError extends Error {
   }
 }
 
-const MODEL = "gemini-1.5-flash";
+const MODEL = "gemini-3-flash-preview";
 const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
 function getApiKey(): string {
@@ -86,7 +86,9 @@ async function callGemini(
         detail = errBody?.error?.message ?? detail;
       } catch (_) { /* ignore */ }
 
-      const retryable = resp.status === 429 || resp.status >= 500;
+      // 429 with "limit: 0" means zero quota — retrying will never help
+      const isHardQuotaZero = resp.status === 429 && /limit:\s*0/i.test(detail);
+      const retryable = !isHardQuotaZero && (resp.status === 429 || resp.status >= 500);
       const err = Object.assign(new Error(`${resp.status}: ${detail}`), { retryable });
       lastError = err;
       if (!retryable || attempt === maxAttempts) throw err;
