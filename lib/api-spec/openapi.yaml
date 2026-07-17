@@ -3,13 +3,15 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Candor Recruiter Intelligence API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: candor
+    description: Candor recruiter intelligence operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,100 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /candor/analyze:
+    post:
+      operationId: analyzeResume
+      tags: [candor]
+      summary: Analyze a resume against a job description
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResumeAnalysisInput"
+      responses:
+        "200":
+          description: Analysis result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CandidateResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI service unavailable (API key not configured)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /candor/compare:
+    post:
+      operationId: compareCandidates
+      tags: [candor]
+      summary: Rank multiple candidates against each other for a role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompareInput"
+      responses:
+        "200":
+          description: Ranking result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompareResult"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /candor/import-job:
+    post:
+      operationId: importJobDescription
+      tags: [candor]
+      summary: Import a job description from a URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JobImportInput"
+      responses:
+        "200":
+          description: Extracted job details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobImportResult"
+        "400":
+          description: Bad request or URL could not be fetched
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +130,171 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+      required:
+        - error
+
+    ResumeAnalysisInput:
+      type: object
+      required: [resumeBase64, jobDescription]
+      properties:
+        resumeBase64:
+          type: string
+          description: Base64-encoded PDF content
+        jobTitle:
+          type: ["string", "null"]
+        jobDescription:
+          type: string
+
+    Strength:
+      type: object
+      required: [title, detail]
+      properties:
+        title:
+          type: string
+        detail:
+          type: string
+
+    Concern:
+      type: object
+      required: [title, detail]
+      properties:
+        title:
+          type: string
+        detail:
+          type: string
+
+    CandidateResult:
+      type: object
+      required:
+        - candidateName
+        - currentTitle
+        - recommendation
+        - confidence
+        - summary
+        - strengths
+        - concerns
+        - achievementScore
+        - achievementNote
+        - aiRiskLevel
+        - aiRiskNote
+        - questions
+      properties:
+        candidateName:
+          type: string
+        currentTitle:
+          type: string
+        recommendation:
+          type: string
+          enum: [Interview, Maybe, Pass]
+        confidence:
+          type: number
+        summary:
+          type: string
+        strengths:
+          type: array
+          items:
+            $ref: "#/components/schemas/Strength"
+        concerns:
+          type: array
+          items:
+            $ref: "#/components/schemas/Concern"
+        achievementScore:
+          type: number
+        achievementNote:
+          type: string
+        aiRiskLevel:
+          type: string
+          enum: [Low, Medium, High]
+        aiRiskNote:
+          type: string
+        questions:
+          type: array
+          items:
+            type: string
+
+    CandidateSummary:
+      type: object
+      required: [id, candidateName, currentTitle, recommendation, confidence, summary, strengths, concerns, achievementScore, aiRiskLevel]
+      properties:
+        id:
+          type: string
+        candidateName:
+          type: string
+        currentTitle:
+          type: string
+        recommendation:
+          type: string
+          enum: [Interview, Maybe, Pass]
+        confidence:
+          type: number
+        summary:
+          type: string
+        strengths:
+          type: array
+          items:
+            $ref: "#/components/schemas/Strength"
+        concerns:
+          type: array
+          items:
+            $ref: "#/components/schemas/Concern"
+        achievementScore:
+          type: number
+        aiRiskLevel:
+          type: string
+          enum: [Low, Medium, High]
+
+    CompareInput:
+      type: object
+      required: [candidates, jobDescription]
+      properties:
+        jobTitle:
+          type: ["string", "null"]
+        jobDescription:
+          type: string
+        candidates:
+          type: array
+          items:
+            $ref: "#/components/schemas/CandidateSummary"
+
+    RankItem:
+      type: object
+      required: [id, rank, reason]
+      properties:
+        id:
+          type: string
+        rank:
+          type: number
+        reason:
+          type: string
+
+    CompareResult:
+      type: object
+      required: [ranking]
+      properties:
+        ranking:
+          type: array
+          items:
+            $ref: "#/components/schemas/RankItem"
+
+    JobImportInput:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+
+    JobImportResult:
+      type: object
+      required: [jobDescription]
+      properties:
+        jobTitle:
+          type: ["string", "null"]
+        jobDescription:
+          type: string
