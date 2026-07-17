@@ -27,12 +27,12 @@ export function Hero() {
           
           <p className="font-sans text-[16px] leading-relaxed text-muted-dark mt-6 max-w-lg">
             Most "AI resume intelligence" is a faster keyword scanner in a nicer wrapper.
-            Candor doesn't score overlap with the posting — it reasons about trajectory,
+            Candor doesn't score overlap with the posting. It reasons about trajectory,
             transferable skills, and real impact, the way your sharpest recruiter would.
           </p>
 
           <div className="flex gap-2 mt-8 flex-wrap">
-            {["Finds strengths you didn't ask about", "Concerns ≠ rejection", "Built-in AI-content detector", "Ranks candidates against each other"].map(t => (
+            {["Finds strengths you didn't ask about", "Concerns are not rejections", "Built-in AI-content detector", "Ranks candidates against each other"].map(t => (
               <span key={t} className="font-sans font-semibold text-[12.5px] text-text-paper border border-line-dark rounded-full px-3 py-1.5 bg-white/5 backdrop-blur-sm">
                 {t}
               </span>
@@ -43,10 +43,10 @@ export function Hero() {
         <div className="relative mt-10 lg:mt-0">
           <div className="bg-paper text-ink rounded-lg p-6 shadow-[0_24px_60px_rgba(0,0,0,0.35)] rotate-[1.5deg] font-sans text-[13.5px] leading-[1.7] border border-line/50">
             <div className="font-serif font-semibold text-[16px] mb-2 text-ink">
-              M. Okafor — Senior Analyst
+              M. Okafor, Senior Analyst
             </div>
             <p className="m-0 text-text-ink">
-              Led a <span className="bg-emerald/20 border-b-2 border-emerald px-1">migration that cut reporting time 40%</span> with no formal engineering title. <span className="bg-amber/20 border-b-2 border-amber px-1">Six-month gap in 2023</span> — worth a question, not a rejection.
+              Led a <span className="bg-emerald/20 border-b-2 border-emerald px-1">migration that cut reporting time 40%</span> with no formal engineering title. <span className="bg-amber/20 border-b-2 border-amber px-1">Six-month gap in 2023</span>: worth a question, not a rejection.
             </p>
           </div>
           <div className="absolute -top-5 -right-3 shadow-xl rounded-full bg-paper">

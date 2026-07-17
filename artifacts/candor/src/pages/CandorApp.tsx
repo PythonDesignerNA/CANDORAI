@@ -16,7 +16,7 @@ export default function CandorApp() {
     jobDescription, setJobDescription,
     isJobSet, setIsJobSet,
     addCandidates, retryCandidate, removeCandidate, resetRole,
-    importJobDesc, compareCandidates
+    compareCandidates
   } = useCandor();
 
   const [activeTab, setActiveTab] = useState<'analyze' | 'compare'>('analyze');
@@ -124,7 +124,6 @@ export default function CandorApp() {
               jobTitle={jobTitle} setJobTitle={setJobTitle}
               jobDescription={jobDescription} setJobDescription={setJobDescription}
               isJobSet={isJobSet} setIsJobSet={setIsJobSet}
-              importJobDesc={importJobDesc}
             />
             {isJobSet && (
               <div 
@@ -156,7 +155,6 @@ export default function CandorApp() {
                 jobTitle={jobTitle} setJobTitle={setJobTitle}
                 jobDescription={jobDescription} setJobDescription={setJobDescription}
                 isJobSet={isJobSet} setIsJobSet={setIsJobSet}
-                importJobDesc={importJobDesc}
               />
               
               {isJobSet && (

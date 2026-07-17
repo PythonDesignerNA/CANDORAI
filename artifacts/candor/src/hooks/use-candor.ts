@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAnalyzeResume, useCompareCandidates, useImportJobDescription, CandidateResult, CompareResult, JobImportResult, CandidateSummary } from '@workspace/api-client-react';
+import { useAnalyzeResume, useCompareCandidates, CandidateResult, CandidateSummary } from '@workspace/api-client-react';
 
 export interface Candidate {
   id: string;
@@ -19,7 +19,6 @@ export function useCandor() {
   
   const analyzeResume = useAnalyzeResume();
   const compareCandidates = useCompareCandidates();
-  const importJobDesc = useImportJobDescription();
 
   // Helper to read file as base64
   const readFileAsBase64 = (file: File): Promise<string> => {
@@ -107,6 +106,5 @@ export function useCandor() {
     resetRole,
     analyzeResume,
     compareCandidates,
-    importJobDesc
   };
 }
