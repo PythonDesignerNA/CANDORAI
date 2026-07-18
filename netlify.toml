@@ -1,0 +1,35 @@
+[build]
+  # pnpm is auto-detected from pnpm-lock.yaml when PNPM_VERSION is set.
+  # NPM_FLAGS prevents Netlify from also running a redundant `npm install`.
+  command = "pnpm install --frozen-lockfile && pnpm --filter @workspace/api-spec run codegen && pnpm --filter @workspace/candor run build"
+  publish = "artifacts/candor/dist/public"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION  = "24"
+  PNPM_VERSION  = "10"
+  # Prevent Netlify's auto npm install (we handle install ourselves above)
+  NPM_FLAGS     = "--prefix=/dev/null"
+  # Vite requires BASE_PATH; "/" is correct for a root-level Netlify deployment
+  BASE_PATH     = "/"
+  # PORT is only used by the Vite dev server, not the production build —
+  # provide any value to satisfy the env-var check in vite.config.ts
+  PORT          = "3000"
+  NODE_ENV      = "production"
+
+# ── API routes → Netlify Functions ───────────────────────────────────────────
+[[redirects]]
+  from   = "/api/candor/analyze"
+  to     = "/.netlify/functions/candor-analyze"
+  status = 200
+
+[[redirects]]
+  from   = "/api/candor/compare"
+  to     = "/.netlify/functions/candor-compare"
+  status = 200
+
+# ── SPA fallback: deep-links and browser refreshes all serve index.html ──────
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

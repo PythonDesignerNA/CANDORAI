@@ -5,36 +5,28 @@ import { defineConfig } from 'vite';
 
 import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';
 
+// PORT is only needed for the dev/preview server, not for `vite build`.
+// Default to 3000 so production CI builds don't throw.
 const rawPort = process.env.PORT;
-
-if (!rawPort) {
-  throw new Error(
-    'PORT environment variable is required but was not provided.',
-  );
-}
-
-const port = Number(rawPort);
-
+const port = rawPort ? Number(rawPort) : 3000;
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-const basePath = process.env.BASE_PATH;
+// BASE_PATH defaults to "/" which is correct for root-level deployments
+// (Netlify, Vercel, etc.).  Replit sets it to the artifact's mount path.
+const basePath = process.env.BASE_PATH ?? '/';
 
-if (!basePath) {
-  throw new Error(
-    'BASE_PATH environment variable is required but was not provided.',
-  );
-}
+const isProd = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
   base: basePath,
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== 'production' &&
-    process.env.REPL_ID !== undefined
+    // Runtime error overlay is dev-only — skip in production builds
+    ...(!isProd ? [runtimeErrorOverlay()] : []),
+    ...(!isProd && process.env.REPL_ID !== undefined
       ? [
           await import('@replit/vite-plugin-cartographer').then((m) =>
             m.cartographer({
