@@ -76,6 +76,9 @@ async function callGemini(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        // Hard cap per attempt — keeps us well inside the reverse-proxy timeout.
+        // Retries (on 429 / 5xx) each get their own fresh 26 s window.
+        signal: AbortSignal.timeout(26_000),
       }
     );
 
