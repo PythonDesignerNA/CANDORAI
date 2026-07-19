@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Link } from 'wouter';
 import { useCandor } from '../hooks/use-candor';
 import { Hero } from '../components/Hero';
 import { JobSetupCard } from '../components/JobSetupCard';
@@ -117,7 +118,7 @@ export default function CandorApp() {
 
       {/* Main Content */}
       {!hasCandidates ? (
-        <main className="flex-1 max-w-[1200px] w-full mx-auto pb-20">
+        <main className="flex-1 max-w-[1200px] w-full mx-auto pb-12">
           <Hero />
           <div className="max-w-2xl mx-auto mt-12 px-6">
             <JobSetupCard 
@@ -145,6 +146,17 @@ export default function CandorApp() {
               </div>
             )}
           </div>
+          
+          {/* Footer */}
+          <footer className="mt-16 px-6 pb-8 text-center">
+            <p className="text-[12px] text-muted-paper">
+              By using Candor you agree to our{' '}
+              <Link href="/terms" className="underline underline-offset-2 hover:text-muted-dark transition-colors">
+                Terms of Service
+              </Link>
+              {' '}&amp; AI Disclaimer.
+            </p>
+          </footer>
         </main>
       ) : (
         <div className="flex-1 flex overflow-hidden">
