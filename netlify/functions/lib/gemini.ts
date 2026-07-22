@@ -11,7 +11,7 @@ export class GeminiNotConfiguredError extends Error {
   }
 }
 
-const MODEL = "gemini-3-flash-preview";
+const MODEL = "gemini-2.5-flash";
 const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models";
 
 function getApiKey(): string {
