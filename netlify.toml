@@ -26,10 +26,10 @@
 # see https://docs.netlify.com/build/functions/configuration/. Until that's
 # done, both functions are silently capped at 10s regardless of this value.
 [functions."candor-analyze"]
-  timeout = 26
+  timeout = 10
 
 [functions."candor-compare"]
-  timeout = 26
+  timeout = 10
 
 # ── API routes → Netlify Functions ───────────────────────────────────────────
 [[redirects]]
