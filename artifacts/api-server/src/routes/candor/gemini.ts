@@ -56,11 +56,15 @@ async function callGemini(
   const apiKey = getApiKey();
   const { tools, expectJson = true } = opts;
 
-  const maxAttempts = 5;
+  // Keep dev-mode behavior aligned with the deployed Netlify function so
+  // slowness isn't only discovered in production. See netlify/functions/lib/gemini.ts
+  // for why this is 2 short attempts rather than 5 long ones.
+  const maxAttempts = 2;
+  const perAttemptTimeoutMs = 11_000;
   let lastError: Error = new Error("Unknown error");
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const config: GeminiConfig = { maxOutputTokens: 2048 };
+    const config: GeminiConfig = { maxOutputTokens: 1200 };
     if (expectJson && !tools) config.responseMimeType = "application/json";
 
     const body: Record<string, unknown> = {
@@ -78,7 +82,7 @@ async function callGemini(
         body: JSON.stringify(body),
         // Hard cap per attempt — keeps us well inside the reverse-proxy timeout.
         // Retries (on 429 / 5xx) each get their own fresh 26 s window.
-        signal: AbortSignal.timeout(26_000),
+        signal: AbortSignal.timeout(perAttemptTimeoutMs),
       }
     );
 
@@ -95,7 +99,7 @@ async function callGemini(
       const err = Object.assign(new Error(`${resp.status}: ${detail}`), { retryable });
       lastError = err;
       if (!retryable || attempt === maxAttempts) throw err;
-      await sleep(Math.min(1000 * Math.pow(2, attempt - 1), 16000));
+      await sleep(500);
       continue;
     }
 

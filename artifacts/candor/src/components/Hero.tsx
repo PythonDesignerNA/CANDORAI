@@ -1,56 +1,66 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 import { VerdictStamp } from './VerdictStamp';
+import { RiskBadge } from './RiskBadge';
+import { ScoreMeter } from './ScoreMeter';
 
 export function Hero() {
   return (
-    <div className="relative overflow-hidden bg-ink text-text-paper px-10 py-16 md:py-24 rounded-2xl shadow-2xl mx-8 mt-6">
-      {/* background pattern */}
-      <div 
-        className="absolute inset-0 opacity-50 pointer-events-none"
-        style={{ backgroundImage: `repeating-linear-gradient(115deg, transparent 0 78px, rgba(44, 54, 96, 0.3) 78px 79px)` }} 
-      />
-      <div 
-        className="absolute top-[-140px] right-[-100px] w-[360px] h-[360px] rounded-full pointer-events-none"
-        style={{ background: `radial-gradient(circle, rgba(47, 143, 91, 0.15) 0%, transparent 70%)` }} 
-      />
-
-      <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_0.85fr] gap-12 items-center relative">
+    <div className="px-8 pt-16 pb-14 md:pt-24 md:pb-20">
+      <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-16 items-center">
         <div>
-          <div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-wider uppercase text-emerald border border-emerald/30 bg-emerald/10 px-3 py-1.5 rounded-full mb-6">
-            <Sparkles size={12} /> Judgment, not another keyword scanner
-          </div>
-          
-          <h1 className="font-serif font-semibold text-5xl leading-[1.08] tracking-tight m-0 text-white">
-            Would a <span className="italic text-emerald">good recruiter</span> interview them?
-          </h1>
-          
-          <p className="font-sans text-[16px] leading-relaxed text-muted-dark mt-6 max-w-lg">
-            Most "AI resume intelligence" is a faster keyword scanner in a nicer wrapper.
-            Candor doesn't score overlap with the posting. It reasons about trajectory,
-            transferable skills, and real impact, the way your sharpest recruiter would.
+          <p className="font-sans font-medium text-[13px] text-indigo mb-5">
+            Not another keyword-matching resume scanner
           </p>
 
-          <div className="flex gap-2 mt-8 flex-wrap">
-            {["Finds strengths you didn't ask about", "Concerns are not rejections", "Built-in AI-content detector", "Ranks candidates against each other"].map(t => (
-              <span key={t} className="font-sans font-semibold text-[12.5px] text-text-paper border border-line-dark rounded-full px-3 py-1.5 bg-white/5 backdrop-blur-sm">
+          <h1 className="font-serif font-semibold text-[44px] leading-[1.08] tracking-tight m-0 text-ink">
+            Would a good recruiter interview them?
+          </h1>
+
+          <p className="font-sans text-[17px] leading-relaxed text-muted-paper mt-6 max-w-lg">
+            Candor doesn't score keyword overlap with the posting. It reasons about
+            trajectory, transferable skills, and real impact — the way your sharpest
+            recruiter reads a resume — then tells you exactly why.
+          </p>
+
+          <ul className="mt-8 space-y-3 max-w-md">
+            {[
+              "Surfaces strengths the job description didn't ask about",
+              "Flags concerns without treating them as disqualifiers",
+              "Screens for AI-generated resume content",
+              "Ranks every candidate against the others, with reasons",
+            ].map(t => (
+              <li key={t} className="flex items-start gap-3 text-[14.5px] text-ink">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo mt-[7px] shrink-0" />
                 {t}
-              </span>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
 
-        <div className="relative mt-10 lg:mt-0">
-          <div className="bg-paper text-ink rounded-lg p-6 shadow-[0_24px_60px_rgba(0,0,0,0.35)] rotate-[1.5deg] font-sans text-[13.5px] leading-[1.7] border border-line/50">
-            <div className="font-serif font-semibold text-[16px] mb-2 text-ink">
-              M. Okafor, Senior Analyst
-            </div>
-            <p className="m-0 text-text-ink">
-              Led a <span className="bg-emerald/20 border-b-2 border-emerald px-1">migration that cut reporting time 40%</span> with no formal engineering title. <span className="bg-amber/20 border-b-2 border-amber px-1">Six-month gap in 2023</span>: worth a question, not a rejection.
-            </p>
+        {/* Live product preview, not a stylized mockup */}
+        <div className="bg-white border border-line rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-5 py-3 border-b border-line flex items-center justify-between">
+            <span className="font-mono text-[10.5px] uppercase tracking-wide text-muted-paper">Candidate read</span>
+            <VerdictStamp recommendation="Interview" confidence={87} size="sm" />
           </div>
-          <div className="absolute -top-5 -right-3 shadow-xl rounded-full bg-paper">
-            <VerdictStamp recommendation="Interview" confidence={87} size="lg" />
+          <div className="p-5">
+            <div className="font-serif font-semibold text-[17px] text-ink">M. Okafor</div>
+            <div className="text-[12.5px] text-muted-paper mb-3">Senior Analyst → applying for Staff PM</div>
+            <p className="text-[13.5px] leading-relaxed text-ink m-0">
+              Led a <span className="bg-emerald-soft text-emerald px-1 rounded">migration that cut reporting time 40%</span> with
+              no formal engineering title. <span className="bg-amber-soft text-amber px-1 rounded">Six-month gap in 2023</span> —
+              worth a question, not a rejection.
+            </p>
+            <div className="mt-4 pt-4 border-t border-line grid grid-cols-2 gap-4">
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-wide text-muted-paper mb-1.5">Achievement</div>
+                <ScoreMeter value={82} />
+              </div>
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-wide text-muted-paper mb-1.5">AI content</div>
+                <RiskBadge level="Low" />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -22,16 +22,16 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 const T = {
-  ink: "#12192B",
-  paper: "#F6F1E7",
-  textInk: "#1C2333",
-  mutedDark: "#9AA3B8",
-  mutedPaper: "#7A705E",
-  emerald: "#2F8F5B",
-  amber: "#C6862B",
-  rose: "#B4483F",
-  indigo: "#4453B8",
-  line: "#D9D2C0",
+  ink: "#14161A",
+  paper: "#FFFFFF",
+  textInk: "#14161A",
+  mutedDark: "#9B9BA3",
+  mutedPaper: "#6B6B76",
+  emerald: "#1F7A5C",
+  amber: "#A8681A",
+  rose: "#A8402E",
+  indigo: "#2A3EAA",
+  line: "#E3E3E7",
 };
 
 export async function exportCandidatePDF(candidate: Candidate, jobTitle: string, jobDescription: string) {

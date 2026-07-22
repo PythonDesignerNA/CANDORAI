@@ -40,7 +40,17 @@ async function callGemini(
   expectJson = true
 ): Promise<string> {
   const apiKey = getApiKey();
-  const maxAttempts = 5;
+  // A standard (synchronous) Netlify Function gets 10s by default, and at
+  // most 26s on Pro/Enterprise — and only after `timeout` is set in
+  // netlify.toml AND Netlify support activates it for the site. There is no
+  // 60s tier for this function type. Budgeting a single attempt at 55s (as
+  // this used to) means Netlify kills the whole invocation long before that
+  // fires, the retry loop below never runs, and the frontend's own retry
+  // just re-triggers the same dead-on-arrival budget again. Two short
+  // attempts that actually fit inside the real ceiling beat one long attempt
+  // that never gets to finish.
+  const maxAttempts = 2;
+  const perAttemptTimeoutMs = 11_000;
   let lastError: Error = new Error("Unknown error");
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -48,7 +58,7 @@ async function callGemini(
       systemInstruction: { parts: [{ text: system }] },
       contents,
       generationConfig: {
-        maxOutputTokens: 2048,
+        maxOutputTokens: 1200, // spec asks for well under 700 words (~950 tokens); 2048 just left more room to run long
         ...(expectJson ? { responseMimeType: "application/json" } : {}),
       },
     };
@@ -59,7 +69,7 @@ async function callGemini(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(55_000), // Netlify Functions timeout is 60s
+        signal: AbortSignal.timeout(perAttemptTimeoutMs),
       }
     );
 
@@ -79,7 +89,7 @@ async function callGemini(
         retryable,
       });
       if (!retryable || attempt === maxAttempts) throw lastError;
-      await sleep(Math.min(1000 * Math.pow(2, attempt - 1), 16_000));
+      await sleep(500); // one short, bounded gap — not exponential backoff we don't have time for
       continue;
     }
 

@@ -17,6 +17,20 @@
   PORT          = "3000"
   NODE_ENV      = "production"
 
+# ── Function execution timeout ────────────────────────────────────────────────
+# Synchronous Netlify Functions default to a 10-second timeout. Gemini's
+# document analysis of a resume PDF routinely takes 8-20+ seconds, so the
+# candor-analyze / candor-compare functions need the extended window.
+# IMPORTANT: this setting only takes effect on a Pro/Enterprise plan, and
+# Netlify support must activate it for this site even after it's set here —
+# see https://docs.netlify.com/build/functions/configuration/. Until that's
+# done, both functions are silently capped at 10s regardless of this value.
+[functions."candor-analyze"]
+  timeout = 26
+
+[functions."candor-compare"]
+  timeout = 26
+
 # ── API routes → Netlify Functions ───────────────────────────────────────────
 [[redirects]]
   from   = "/api/candor/analyze"
