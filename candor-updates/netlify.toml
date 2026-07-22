@@ -1,0 +1,49 @@
+[build]
+  # pnpm is auto-detected from pnpm-lock.yaml when PNPM_VERSION is set.
+  # NPM_FLAGS prevents Netlify from also running a redundant `npm install`.
+  command = "pnpm install --frozen-lockfile && pnpm --filter @workspace/api-spec run codegen && pnpm --filter @workspace/candor run build"
+  publish = "artifacts/candor/dist/public"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION  = "24"
+  PNPM_VERSION  = "10"
+  # Prevent Netlify's auto npm install (we handle install ourselves above)
+  NPM_FLAGS     = "--prefix=/dev/null"
+  # Vite requires BASE_PATH; "/" is correct for a root-level Netlify deployment
+  BASE_PATH     = "/"
+  # PORT is only used by the Vite dev server, not the production build —
+  # provide any value to satisfy the env-var check in vite.config.ts
+  PORT          = "3000"
+  NODE_ENV      = "production"
+
+# ── Function execution timeout ────────────────────────────────────────────────
+# Synchronous Netlify Functions default to a 10-second timeout. Gemini's
+# document analysis of a resume PDF routinely takes 8-20+ seconds, so the
+# candor-analyze / candor-compare functions need the extended window.
+# IMPORTANT: this setting only takes effect on a Pro/Enterprise plan, and
+# Netlify support must activate it for this site even after it's set here —
+# see https://docs.netlify.com/build/functions/configuration/. Until that's
+# done, both functions are silently capped at 10s regardless of this value.
+[functions."candor-analyze"]
+  timeout = 26
+
+[functions."candor-compare"]
+  timeout = 26
+
+# ── API routes → Netlify Functions ───────────────────────────────────────────
+[[redirects]]
+  from   = "/api/candor/analyze"
+  to     = "/.netlify/functions/candor-analyze"
+  status = 200
+
+[[redirects]]
+  from   = "/api/candor/compare"
+  to     = "/.netlify/functions/candor-compare"
+  status = 200
+
+# ── SPA fallback: deep-links and browser refreshes all serve index.html ──────
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
